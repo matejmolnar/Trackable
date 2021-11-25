@@ -24,7 +24,7 @@ public extension Key where Self : RawRepresentable {
     /**
         String representation of Event object.
      */
-    public var description: String {
+    var description: String {
         var rawDescription = String(reflecting: type(of: self)) + "." + "\(self.rawValue)"
         if let
             prefixToRemove = keyPrefixToRemove,
@@ -45,17 +45,24 @@ public extension Key {
             return description + "." + key.description
         }
         
-        let myKey = description
-        let otherKey = key.description
+        var finalKey = description
+        let myKeySubstrings = finalKey.split(separator: ".", omittingEmptySubsequences: true)
+        let otherKeySubstrings = key.description.split(separator: ".", omittingEmptySubsequences: true)
         
-        var finalKey = myKey
-        
-        for i in 1...otherKey.characters.count {
-            let prefix = String(otherKey.characters.prefix(i))
-            if myKey.hasPrefix(prefix) == false {
-                finalKey = finalKey + "." + String(otherKey.characters.suffix(otherKey.characters.count - i + 1))
+        for i in 0..<otherKeySubstrings.endIndex {
+            guard
+                i < myKeySubstrings.endIndex,
+                otherKeySubstrings[i] == myKeySubstrings[i]
+            else {
+                let subArray = otherKeySubstrings[i..<otherKeySubstrings.endIndex]
+                
+                finalKey = subArray.reduce(finalKey, { result, substring in
+                    result + "." + String(substring)
+                })
                 break
             }
+            
+            continue
         }
         
         let keyWithoutRepeatingParts = removeRepeatingParts(finalKey)

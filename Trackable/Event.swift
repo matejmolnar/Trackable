@@ -19,7 +19,7 @@ public extension Event where Self : RawRepresentable {
     /**
         String representation of Event object.
      */
-    public var description: String {
+    var description: String {
         var rawDescription = String(reflecting: type(of: self)) + "." + "\(self.rawValue)"
         if let
             prefixToRemove = eventPrefixToRemove,
